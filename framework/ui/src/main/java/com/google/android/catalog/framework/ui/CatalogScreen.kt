@@ -18,7 +18,6 @@ package com.google.android.catalog.framework.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,6 +37,8 @@ import com.google.android.catalog.framework.ui.components.CardItem
 import com.google.android.catalog.framework.ui.components.CatalogTopAppBar
 import com.google.android.catalog.framework.ui.components.FilterTabRow
 import com.google.android.catalog.framework.ui.components.SearchTopAppBar
+
+internal const val CATALOG_DESTINATION = "catalog"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -100,10 +101,9 @@ internal fun CatalogScreen(
         }
     ) { paddingValues ->
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
+            modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = paddingValues
         ) {
             item {
                 FilterTabRow(filters, selectedFilters) {
@@ -115,7 +115,12 @@ internal fun CatalogScreen(
                 }
             }
             items(displayedSamples) {
-                CardItem(it.name, it.description, it.tags) {
+                CardItem(
+                    label = it.name,
+                    description = it.description,
+                    tags = it.tags,
+                    minSDK = it.minSDK,
+                ) {
                     launchSample(it)
                     searchState = false
                 }
