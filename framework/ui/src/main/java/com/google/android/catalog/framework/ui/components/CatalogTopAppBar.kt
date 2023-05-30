@@ -18,11 +18,14 @@ package com.google.android.catalog.framework.ui.components
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.rounded.Fullscreen
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -36,6 +39,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -47,18 +51,33 @@ import com.google.android.catalog.framework.ui.R
 fun CatalogTopAppBar(
     selectedSample: CatalogSample? = null,
     onSearch: () -> Unit = {},
+    onExpand: () -> Unit = {},
     onBackClick: () -> Unit = {},
 ) {
+    val context = LocalContext.current
+    val isExpandedScreen = isExpandedScreen()
     var menuExpanded by remember { mutableStateOf(false) }
 
-    val context = LocalContext.current
     fun launchUrl(url: String) {
         check(url.isNotBlank()) {
             "Provided URL is empty. Did you miss adding the base URL?"
         }
+
+        // If we are in dual-pane screen expand the sample before launching multi-window
+        if (isExpandedScreen && selectedSample != null) {
+            onExpand()
+        }
         context.startActivity(
             Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+                // Only launch multi-window if we are in expanded mode
+                if (isExpandedScreen) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT)
+                    }
+                    addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
+                }
             }
         )
         menuExpanded = false
@@ -74,12 +93,21 @@ fun CatalogTopAppBar(
         },
         actions = {
             Box {
-                Row {
-                    if (selectedSample == null) {
+                Row(Modifier.animateContentSize()) {
+                    if (isExpandedScreen || selectedSample == null) {
                         IconButton(onClick = onSearch) {
                             Icon(
                                 imageVector = Icons.Rounded.Search,
-                                contentDescription = "Search button"
+                                contentDescription = "Search"
+                            )
+                        }
+                    }
+
+                    if (selectedSample != null && isExpandedScreen) {
+                        IconButton(onClick = onExpand) {
+                            Icon(
+                                imageVector = Icons.Rounded.Fullscreen,
+                                contentDescription = "Fullscreen"
                             )
                         }
                     }
@@ -99,10 +127,8 @@ fun CatalogTopAppBar(
                             else -> {
                                 stringResource(
                                     id = R.string.source_base_url,
-                                    if (selectedSample.sourcePath.isBlank()) {
+                                    selectedSample.sourcePath.ifBlank {
                                         selectedSample.path
-                                    } else {
-                                        selectedSample.sourcePath
                                     }
                                 )
                             }
@@ -151,10 +177,10 @@ fun CatalogTopAppBar(
             }
         },
         navigationIcon = {
-            if (selectedSample != null) {
+            if (selectedSample != null && !isExpandedScreen) {
                 IconButton(onClick = onBackClick) {
                     Icon(
-                        imageVector = Icons.Default.ArrowBack, contentDescription = null
+                        imageVector = Icons.Default.ArrowBack, contentDescription = "Back"
                     )
                 }
             }

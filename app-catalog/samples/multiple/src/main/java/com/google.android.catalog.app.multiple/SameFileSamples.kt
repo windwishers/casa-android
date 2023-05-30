@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.android.catalog.app.compose
+package com.google.android.catalog.app.multiple
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,14 +24,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.google.android.catalog.framework.annotations.Sample
 
-@Sample(
-    name = "Compose sample",
-    description = "Shows how to add a compose target in the catalog",
-    documentation = "https://github.com/google/casa-android#create-sample-modules"
-)
+@Sample(name = "Same file sample 1", "Show how a file can contain multiple samples")
 @Composable
-fun ComposeSample() {
+fun SameFileSample1() {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(text = "Hi, I am a compose sample target!")
+        Text(text = "Hi, I am same file sample 1")
+    }
+}
+
+@Sample(name = "Same file sample 2", "Show how a file can contain multiple samples")
+@Composable
+fun SameFileSample2() {
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text(text = "Hi, I am same file sample 2")
     }
 }
