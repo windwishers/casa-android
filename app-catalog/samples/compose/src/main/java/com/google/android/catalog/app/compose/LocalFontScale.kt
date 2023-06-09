@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,22 @@
 
 package com.google.android.catalog.app.compose
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import com.google.android.catalog.framework.annotations.Sample
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 
-@Sample(
-    name = "Compose sample",
-    description = "Shows how to add a compose target in the catalog",
-    documentation = "https://github.com/google/casa-android#create-sample-modules"
-)
 @Composable
-fun ComposeSample() {
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(text = "Hi, I am a compose sample target!")
-    }
+fun  LocalFontScale(
+    fontScale : Float,
+    density : Float = LocalDensity.current.density,
+    content : @Composable ()->Unit,
+){
+    CompositionLocalProvider(
+        LocalDensity provides Density(
+            density,
+            fontScale,
+        ),
+        content = content
+    )
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-apply from: "$rootDir/gradle/sample-build.gradle"
+package com.google.android.catalog.app.compose.common
 
-android {
-    namespace 'com.google.android.catalog.app.compose'
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 
-    kotlinOptions {
-        freeCompilerArgs += "-opt-in=androidx.compose.foundation.layout.ExperimentalLayoutApi"
-    }
+@Suppress("UnusedReceiverParameter")
+@Composable
+fun ColumnScope.Spacer(height : Dp,){
+    androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(height))
 }
-
-dependencies {}
